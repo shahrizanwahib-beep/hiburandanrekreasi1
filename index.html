@@ -1,0 +1,1224 @@
+<!doctype html>
+<html lang="en">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kata Kerja Interactive Presentation</title>
+  <script src="/_sdk/element_sdk.js"></script>
+  <style>
+        html, body {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            background: white;
+            height: 100%;
+            overflow: auto;
+        }
+
+        body {
+            box-sizing: border-box;
+        }
+
+        .presentation-container {
+            width: 100%;
+            max-width: 1400px;
+            min-height: 100%;
+            position: relative;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            margin: 0 auto;
+        }
+
+        .slide {
+            width: 100%;
+            min-height: 100%;
+            background: white;
+            padding: 60px 60px 120px 60px;
+            display: none;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+            text-align: center;
+            position: relative;
+            overflow-y: visible;
+            box-sizing: border-box;
+        }
+
+        .slide.active {
+            display: flex;
+        }
+
+        .slide-header {
+            background: linear-gradient(45deg, #4FC3F7, #29B6F6);
+            color: white;
+            padding: 15px 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(79, 195, 247, 0.3);
+        }
+
+        .slide h1 {
+            font-size: 4em;
+            margin: 0;
+            color: #1976D2;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .slide h2 {
+            font-size: 3em;
+            margin: 20px 0;
+            color: #0277BD;
+        }
+
+        .slide h3 {
+            font-size: 2.2em;
+            margin: 15px 0;
+            color: #0288D1;
+        }
+
+        .subtitle {
+            font-size: 2em;
+            color: #FFB300;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        .bilingual-text {
+            background: #FFF9C4;
+            padding: 20px;
+            border-radius: 15px;
+            margin: 15px 0;
+            border-left: 5px solid #FFD54F;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            font-size: 1.8em;
+        }
+
+        .malay {
+            color: #1976D2;
+            font-weight: bold;
+            margin-bottom: 5px;
+            font-size: 1.1em;
+        }
+
+        .english {
+            color: #0277BD;
+            font-style: italic;
+            font-size: 1em;
+        }
+
+        .icon {
+            font-size: 3em;
+            margin: 10px;
+            display: inline-block;
+        }
+
+        .examples-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+            width: 100%;
+        }
+
+        .example-card {
+            background: linear-gradient(135deg, #E1F5FE, #B3E5FC);
+            padding: 20px;
+            border-radius: 15px;
+            border: 3px solid #4FC3F7;
+            transition: transform 0.3s ease;
+            font-size: 1.6em;
+        }
+
+        .example-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(79, 195, 247, 0.3);
+        }
+
+        .activity-section {
+            background: #F3E5F5;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border: 3px solid #CE93D8;
+            width: 100%;
+            font-size: 1.5em;
+        }
+
+        .question {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 10px 0;
+            border-left: 4px solid #AB47BC;
+            font-size: 1.3em;
+        }
+
+        .options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin: 15px 0;
+        }
+
+        .option-btn {
+            background: #4FC3F7;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1.4em;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        .option-btn:hover {
+            background: #29B6F6;
+            transform: scale(1.05);
+        }
+
+        .option-btn.correct {
+            background: #4CAF50;
+        }
+
+        .option-btn.incorrect {
+            background: #F44336;
+        }
+
+        .input-field {
+            border: 2px solid #4FC3F7;
+            border-radius: 10px;
+            padding: 15px;
+            font-size: 1.4em;
+            margin: 5px;
+            text-align: center;
+            font-family: inherit;
+        }
+
+        .navigation {
+            position: fixed;
+            bottom: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 8px;
+            z-index: 1000;
+        }
+
+        .nav-btn {
+            background: #FFD54F;
+            color: #1976D2;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 15px;
+            cursor: pointer;
+            font-size: 0.9em;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        .nav-btn:hover {
+            background: #FFC107;
+        }
+
+        .nav-btn:disabled {
+            background: #BDBDBD;
+            cursor: not-allowed;
+        }
+
+        .slide-counter {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            background: #4FC3F7;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+        }
+
+        .objectives-list {
+            text-align: left;
+            background: #E8F5E8;
+            padding: 20px;
+            border-radius: 15px;
+            border-left: 5px solid #4CAF50;
+            font-size: 1.4em;
+        }
+
+        .objectives-list li {
+            margin: 15px 0;
+            color: #2E7D32;
+            font-size: 1.1em;
+        }
+
+        .match-activity {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin: 20px 0;
+        }
+
+        .match-column {
+            background: #FFF3E0;
+            padding: 20px;
+            border-radius: 15px;
+            border: 3px solid #FFB74D;
+            font-size: 1.3em;
+            min-height: 600px;
+        }
+
+        .match-item {
+            background: white;
+            padding: 20px;
+            margin: 10px 0;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            font-size: 1.2em;
+            height: 120px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .match-item:hover {
+            border-color: #FF9800;
+            transform: scale(1.02);
+        }
+
+        .match-item.selected {
+            border-color: #4CAF50;
+            background: #E8F5E8;
+        }
+
+        .feedback {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 10px;
+            font-weight: bold;
+            font-size: 1.3em;
+        }
+
+        .feedback.correct {
+            background: #C8E6C9;
+            color: #2E7D32;
+        }
+
+        .feedback.incorrect {
+            background: #FFCDD2;
+            color: #C62828;
+        }
+
+        .moral-values {
+            background: linear-gradient(135deg, #FCE4EC, #F8BBD9);
+            padding: 25px;
+            border-radius: 15px;
+            border: 3px solid #E91E63;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .summary-card {
+            background: linear-gradient(135deg, #E0F2F1, #B2DFDB);
+            padding: 20px;
+            border-radius: 15px;
+            border: 3px solid #26A69A;
+            font-size: 1.4em;
+        }
+    </style>
+  <style>@view-transition { navigation: auto; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+  <script src="https://cdn.tailwindcss.com" type="text/javascript"></script>
+ </head>
+ <body>
+  <div class="presentation-container"><!-- Slide 1: Title -->
+   <div class="slide active">
+    <div class="slide-counter">
+     1/12
+    </div>
+    <div class="slide-header">
+     <h1 id="presentation-title">Mengenal Aktiviti Rekreasi dan Hiburan</h1>
+     <div class="subtitle" id="subtitle">
+      Understanding Recreational and Entertainment Activities
+     </div>
+    </div>
+    <div class="icon">
+     🎯🎮🏃‍♂️
+    </div>
+    <div class="bilingual-text">
+     <div class="malay">
+      IGCSE Bahasa Melayu sebagai Bahasa Asing
+     </div>
+     <div class="english">
+      IGCSE Malay as a Foreign Language
+     </div>
+    </div>
+   </div><!-- Slide 2: Learning Objectives -->
+   <div class="slide">
+    <div class="slide-counter">
+     2/12
+    </div>
+    <div class="slide-header">
+     <h2>Objektif Pembelajaran / Learning Objectives</h2>
+    </div>
+    <div class="icon">
+     🎯📝✅
+    </div>
+    <div class="objectives-list">
+     <div class="malay" style="font-size: 1.2em; margin-bottom: 15px;">
+      Selepas pembelajaran ini, pelajar akan dapat:
+     </div>
+     <div class="english" style="font-size: 1.1em; margin-bottom: 20px;">
+      After this lesson, students will be able to:
+     </div>
+     <ul>
+      <li><strong>Mengenal pasti aktiviti rekreasi dan hiburan</strong> / Identify recreational and entertainment activities</li>
+      <li><strong>Membezakan antara rekreasi dan hiburan</strong> / Distinguish between recreation and entertainment</li>
+      <li><strong>Menyatakan kebaikan aktiviti masa lapang</strong> / State the benefits of leisure activities</li>
+     </ul>
+    </div>
+   </div><!-- Slide 3: Definition -->
+   <div class="slide">
+    <div class="slide-counter">
+     3/12
+    </div>
+    <div class="slide-header">
+     <h2>Definisi / Definition</h2>
+    </div>
+    <div class="icon">
+     🤔💭❓
+    </div>
+    <div class="examples-grid">
+     <div class="example-card">
+      <h3>Aktiviti Rekreasi</h3>
+      <div class="english">
+       Recreational Activities
+      </div>
+      <div class="icon">
+       🏃‍♂️
+      </div>
+      <div class="bilingual-text">
+       <div class="malay">
+        Aktiviti fizikal yang dilakukan untuk kesihatan dan keseronokan
+       </div>
+       <div class="english">
+        Physical activities done for health and enjoyment
+       </div>
+      </div>
+     </div>
+     <div class="example-card">
+      <h3>Aktiviti Hiburan</h3>
+      <div class="english">
+       Entertainment Activities
+      </div>
+      <div class="icon">
+       🎭
+      </div>
+      <div class="bilingual-text">
+       <div class="malay">
+        Aktiviti yang memberikan kegembiraan dan kepuasan
+       </div>
+       <div class="english">
+        Activities that provide joy and satisfaction
+       </div>
+      </div>
+     </div>
+    </div>
+   </div><!-- Slide 4: Recreational Activities -->
+   <div class="slide">
+    <div class="slide-counter">
+     4/12
+    </div>
+    <div class="slide-header">
+     <h2>Contoh Aktiviti Rekreasi / Recreational Activities Examples</h2>
+    </div>
+    <div class="icon">
+     🏃‍♂️🚴‍♀️🏔️
+    </div>
+    <div class="examples-grid">
+     <div class="example-card">
+      <div class="icon">
+       🏃‍♂️
+      </div>
+      <div class="malay">
+       berjoging
+      </div>
+      <div class="english">
+       jogging
+      </div>
+     </div>
+     <div class="example-card">
+      <div class="icon">
+       🚴‍♀️
+      </div>
+      <div class="malay">
+       berbasikal
+      </div>
+      <div class="english">
+       cycling
+      </div>
+     </div>
+     <div class="example-card">
+      <div class="icon">
+       🏔️
+      </div>
+      <div class="malay">
+       mendaki
+      </div>
+      <div class="english">
+       hiking
+      </div>
+     </div>
+     <div class="example-card">
+      <div class="icon">
+       🧺
+      </div>
+      <div class="malay">
+       berkelah
+      </div>
+      <div class="english">
+       picnic
+      </div>
+     </div>
+     <div class="example-card">
+      <div class="icon">
+       🏊‍♂️
+      </div>
+      <div class="malay">
+       berenang
+      </div>
+      <div class="english">
+       swimming
+      </div>
+     </div>
+     <div class="example-card">
+      <div class="icon">
+       ⚽
+      </div>
+      <div class="malay">
+       bermain bola
+      </div>
+      <div class="english">
+       playing football
+      </div>
+     </div>
+    </div>
+   </div><!-- Slide 5: Entertainment Activities -->
+   <div class="slide">
+    <div class="slide-counter">
+     5/12
+    </div>
+    <div class="slide-header">
+     <h2>Contoh Aktiviti Hiburan / Entertainment Activities Examples</h2>
+    </div>
+    <div class="icon">
+     🎬🎵🎮
+    </div>
+    <div class="examples-grid">
+     <div class="example-card">
+      <div class="icon">
+       🎬
+      </div>
+      <div class="malay">
+       menonton filem
+      </div>
+      <div class="english">
+       watching movies
+      </div>
+     </div>
+     <div class="example-card">
+      <div class="icon">
+       🎵
+      </div>
+      <div class="malay">
+       mendengar muzik
+      </div>
+      <div class="english">
+       listening to music
+      </div>
+     </div>
+     <div class="example-card">
+      <div class="icon">
+       🎮
+      </div>
+      <div class="malay">
+       bermain permainan video
+      </div>
+      <div class="english">
+       playing video games
+      </div>
+     </div>
+     <div class="example-card">
+      <div class="icon">
+       📚
+      </div>
+      <div class="malay">
+       membaca novel
+      </div>
+      <div class="english">
+       reading novels
+      </div>
+     </div>
+     <div class="example-card">
+      <div class="icon">
+       🎭
+      </div>
+      <div class="malay">
+       menonton teater
+      </div>
+      <div class="english">
+       watching theater
+      </div>
+     </div>
+     <div class="example-card">
+      <div class="icon">
+       🎨
+      </div>
+      <div class="malay">
+       melukis
+      </div>
+      <div class="english">
+       painting
+      </div>
+     </div>
+    </div>
+   </div><!-- Slide 6: Benefits -->
+   <div class="slide">
+    <div class="slide-counter">
+     6/12
+    </div>
+    <div class="slide-header">
+     <h2>Kebaikan Aktiviti Rekreasi dan Hiburan</h2>
+     <div class="english">
+      Benefits of Recreational and Entertainment Activities
+     </div>
+    </div>
+    <div class="icon">
+     💪🧠❤️
+    </div><!-- Horizontal layout for benefits -->
+    <div style="display: flex; gap: 25px; margin: 20px 0; flex-wrap: wrap; justify-content: center; width: 100%;">
+     <div class="example-card" style="flex: 1; min-width: 300px; font-size: 1.4em;">
+      <h3 style="font-size: 1.5em; margin-bottom: 10px;">Kebaikan Fizikal</h3>
+      <div class="english" style="font-size: 1.1em;">
+       Physical Benefits
+      </div>
+      <div class="icon" style="font-size: 2.5em;">
+       💪
+      </div>
+      <div class="bilingual-text" style="font-size: 1.1em;">
+       <div class="malay">
+        • Menguatkan badan<br>
+        • Meningkatkan stamina<br>
+        • Menjaga kesihatan
+       </div>
+       <div class="english">
+        • Strengthen body<br>
+        • Increase stamina<br>
+        • Maintain health
+       </div>
+      </div>
+     </div>
+     <div class="example-card" style="flex: 1; min-width: 300px; font-size: 1.4em;">
+      <h3 style="font-size: 1.5em; margin-bottom: 10px;">Kebaikan Mental</h3>
+      <div class="english" style="font-size: 1.1em;">
+       Mental Benefits
+      </div>
+      <div class="icon" style="font-size: 2.5em;">
+       🧠
+      </div>
+      <div class="bilingual-text" style="font-size: 1.1em;">
+       <div class="malay">
+        • Mengurangkan stres<br>
+        • Meningkatkan fokus<br>
+        • Memberikan ketenangan
+       </div>
+       <div class="english">
+        • Reduce stress<br>
+        • Improve focus<br>
+        • Provide calmness
+       </div>
+      </div>
+     </div>
+     <div class="example-card" style="flex: 1; min-width: 300px; font-size: 1.4em;">
+      <h3 style="font-size: 1.5em; margin-bottom: 10px;">Kebaikan Sosial</h3>
+      <div class="english" style="font-size: 1.1em;">
+       Social Benefits
+      </div>
+      <div class="icon" style="font-size: 2.5em;">
+       👥
+      </div>
+      <div class="bilingual-text" style="font-size: 1.1em;">
+       <div class="malay">
+        • Membina persahabatan<br>
+        • Meningkatkan komunikasi<br>
+        • Berkongsi pengalaman
+       </div>
+       <div class="english">
+        • Build friendships<br>
+        • Improve communication<br>
+        • Share experiences
+       </div>
+      </div>
+     </div>
+    </div>
+   </div><!-- Slide 7: Reading Comprehension -->
+   <div class="slide">
+    <div class="slide-counter">
+     7/12
+    </div>
+    <div class="slide-header">
+     <h2>Bahagian Pemahaman / Reading Comprehension</h2>
+    </div>
+    <div class="icon">
+     📖🤔💭
+    </div>
+    <div class="activity-section">
+     <div class="bilingual-text" style="background: #E8F5E8; padding: 20px; border-radius: 15px; margin-bottom: 20px;">
+      <div class="malay" style="font-size: 1.3em; line-height: 1.6;"><strong>Petikan:</strong><br>
+        Amir dan keluarganya suka beriadah di Taman Tasik Titiwangsa pada hujung minggu. Mereka biasanya berjoging di sekeliling tasik pada waktu pagi. Selepas itu, mereka akan berkelah di bawah pokok yang rindang. Adik Amir suka bermain buaian manakala ibunya gemar membaca buku. Ayahnya pula suka memancing di tepi tasik. Aktiviti ini membuatkan keluarga mereka lebih rapat dan sihat.
+      </div>
+      <div class="english" style="font-size: 1.2em; line-height: 1.6; margin-top: 15px;"><strong>Passage:</strong><br>
+        Amir and his family like to spend leisure time at Titiwangsa Lake Park on weekends. They usually jog around the lake in the morning. After that, they will have a picnic under the shady trees. Amir's sister likes to play on the swings while his mother enjoys reading books. His father likes to fish by the lake. These activities make their family closer and healthier.
+      </div>
+     </div>
+    </div>
+   </div><!-- Slide 8: Grammar Mini -->
+   <div class="slide">
+    <div class="slide-counter">
+     8/12
+    </div>
+    <div class="slide-header">
+     <h2>Tatabahasa Mini / Grammar Mini</h2>
+    </div>
+    <div class="icon">
+     📝✏️📋
+    </div>
+    <div class="activity-section">
+     <div class="bilingual-text" style="font-size: 1.4em;">
+      <div class="malay">
+       Struktur Ayat Mudah / Simple Sentence Structure
+      </div>
+      <div class="english">
+       Subjek + Kata Kerja + Objek / Subject + Verb + Object
+      </div>
+     </div><!-- Horizontal layout for examples -->
+     <div style="display: flex; gap: 20px; margin: 20px 0; flex-wrap: wrap; justify-content: center;">
+      <div class="example-card" style="flex: 1; min-width: 280px; font-size: 1.3em;">
+       <h3 style="font-size: 1.4em; margin-bottom: 10px;">Contoh 1 / Example 1</h3>
+       <div class="bilingual-text" style="font-size: 1.1em;">
+        <div class="malay">
+         <span style="color: #1976D2;">Amir</span> <span style="color: #E91E63;">bermain</span> <span style="color: #FF9800;">bola</span>
+        </div>
+        <div class="english">
+         <span style="color: #1976D2;">Amir</span> <span style="color: #E91E63;">plays</span> <span style="color: #FF9800;">football</span>
+        </div>
+       </div>
+      </div>
+      <div class="example-card" style="flex: 1; min-width: 280px; font-size: 1.3em;">
+       <h3 style="font-size: 1.4em; margin-bottom: 10px;">Contoh 2 / Example 2</h3>
+       <div class="bilingual-text" style="font-size: 1.1em;">
+        <div class="malay">
+         <span style="color: #1976D2;">Siti</span> <span style="color: #E91E63;">menonton</span> <span style="color: #FF9800;">filem</span>
+        </div>
+        <div class="english">
+         <span style="color: #1976D2;">Siti</span> <span style="color: #E91E63;">watches</span> <span style="color: #FF9800;">movies</span>
+        </div>
+       </div>
+      </div>
+      <div class="example-card" style="flex: 1; min-width: 280px; font-size: 1.3em;">
+       <h3 style="font-size: 1.4em; margin-bottom: 10px;">Contoh 3 / Example 3</h3>
+       <div class="bilingual-text" style="font-size: 1.1em;">
+        <div class="malay">
+         <span style="color: #1976D2;">Keluarga</span> <span style="color: #E91E63;">berkelah</span> <span style="color: #FF9800;">di taman</span>
+        </div>
+        <div class="english">
+         <span style="color: #1976D2;">Family</span> <span style="color: #E91E63;">picnics</span> <span style="color: #FF9800;">in the park</span>
+        </div>
+       </div>
+      </div>
+     </div>
+     <div style="margin-top: 15px; padding: 12px; background: #FFF3E0; border-radius: 10px; font-size: 1.2em;">
+      <div style="display: flex; gap: 30px; justify-content: center; flex-wrap: wrap;">
+       <div class="malay" style="color: #1976D2;">
+        Subjek (biru)
+       </div>
+       <div class="malay" style="color: #E91E63;">
+        Kata Kerja (merah jambu)
+       </div>
+       <div class="malay" style="color: #FF9800;">
+        Objek (oren)
+       </div>
+      </div>
+     </div>
+    </div>
+   </div><!-- Slide 9: Writing Activity -->
+   <div class="slide">
+    <div class="slide-counter">
+     9/12
+    </div>
+    <div class="slide-header">
+     <h2>Aktiviti Kelas: Latihan Bertulis</h2>
+     <div class="english">
+      Class Activity: Writing Exercise
+     </div>
+    </div>
+    <div class="icon">
+     ✍️📝💭
+    </div>
+    <div class="activity-section">
+     <div class="bilingual-text">
+      <div class="malay">
+       Tulis 5 ayat tentang aktiviti masa lapang kamu
+      </div>
+      <div class="english">
+       Write 5 sentences about your leisure activities
+      </div>
+     </div>
+     <div style="margin: 20px 0;">
+      <div class="malay" style="font-size: 1.3em; margin-bottom: 10px;">
+       Contoh / Examples:
+      </div>
+      <div class="example-card" style="text-align: left;">
+       <div class="malay">
+        1. Saya suka bermain badminton dengan kawan-kawan.
+       </div>
+       <div class="english">
+        1. I like to play badminton with friends.
+       </div><br>
+       <div class="malay">
+        2. Keluarga saya gemar menonton filem di pawagam.
+       </div>
+       <div class="english">
+        2. My family enjoys watching movies at the cinema.
+       </div><br>
+       <div class="malay">
+        3. Adik saya suka melukis pada waktu lapang.
+       </div>
+       <div class="english">
+        3. My sibling likes to paint during free time.
+       </div>
+      </div>
+     </div>
+     <div style="background: #F3E5F5; padding: 20px; border-radius: 15px;">
+      <div class="malay" style="font-size: 1.2em; margin-bottom: 15px;">
+       Tulis jawapan anda di sini:
+      </div>
+      <div class="english" style="margin-bottom: 15px;">
+       Write your answers here:
+      </div>
+      <div style="margin: 10px 0;">
+       <div>
+        1. <input type="text" class="input-field" style="width: 80%;" placeholder="Saya suka...">
+       </div>
+      </div>
+      <div style="margin: 10px 0;">
+       <div>
+        2. <input type="text" class="input-field" style="width: 80%;" placeholder="Keluarga saya...">
+       </div>
+      </div>
+      <div style="margin: 10px 0;">
+       <div>
+        3. <input type="text" class="input-field" style="width: 80%;" placeholder="Pada hujung minggu...">
+       </div>
+      </div>
+      <div style="margin: 10px 0;">
+       <div>
+        4. <input type="text" class="input-field" style="width: 80%;" placeholder="Aktiviti kegemaran saya...">
+       </div>
+      </div>
+      <div style="margin: 10px 0;">
+       <div>
+        5. <input type="text" class="input-field" style="width: 80%;" placeholder="Saya berasa gembira apabila...">
+       </div>
+      </div>
+     </div>
+    </div>
+   </div><!-- Slide 10: Speaking Practice -->
+   <div class="slide">
+    <div class="slide-counter">
+     10/12
+    </div>
+    <div class="slide-header">
+     <h2>Perbualan / Speaking Practice</h2>
+    </div>
+    <div class="icon">
+     🗣️💬🎭
+    </div>
+    <div class="activity-section" style="font-size: 1.3em;">
+     <div class="bilingual-text" style="font-size: 1.2em;">
+      <div class="malay">
+       Dialog ringkas tentang aktiviti kegemaran
+      </div>
+      <div class="english">
+       Short dialogue about favorite activities
+      </div>
+     </div><!-- Horizontal layout for dialogue and phrases -->
+     <div style="display: flex; gap: 25px; margin: 15px 0; flex-wrap: wrap;">
+      <div style="flex: 1.2; min-width: 400px; background: #E1F5FE; padding: 18px; border-radius: 15px; text-align: left; font-size: 1.1em;">
+       <h3 style="margin-top: 0; font-size: 1.3em;">Dialog / Dialogue</h3>
+       <div class="malay" style="margin-bottom: 5px; font-size: 1em;">
+        <strong>Pelajar A:</strong> Apa aktiviti kegemaran kamu?
+       </div>
+       <div class="english" style="margin-bottom: 10px; font-size: 0.9em;">
+        <strong>Student A:</strong> What is your favorite activity?
+       </div>
+       <div class="malay" style="margin-bottom: 5px; font-size: 1em;">
+        <strong>Pelajar B:</strong> Saya suka bermain badminton. Bagaimana dengan kamu?
+       </div>
+       <div class="english" style="margin-bottom: 10px; font-size: 0.9em;">
+        <strong>Student B:</strong> I like to play badminton. How about you?
+       </div>
+       <div class="malay" style="margin-bottom: 5px; font-size: 1em;">
+        <strong>Pelajar A:</strong> Saya gemar menonton filem dengan keluarga.
+       </div>
+       <div class="english" style="margin-bottom: 10px; font-size: 0.9em;">
+        <strong>Student A:</strong> I enjoy watching movies with my family.
+       </div>
+       <div class="malay" style="margin-bottom: 5px; font-size: 1em;">
+        <strong>Pelajar B:</strong> Wah, menarik! Bila kamu biasanya menonton filem?
+       </div>
+       <div class="english" style="margin-bottom: 10px; font-size: 0.9em;">
+        <strong>Student B:</strong> Wow, interesting! When do you usually watch movies?
+       </div>
+       <div class="malay" style="margin-bottom: 5px; font-size: 1em;">
+        <strong>Pelajar A:</strong> Pada hujung minggu. Aktiviti ini membuatkan kami lebih rapat.
+       </div>
+       <div class="english" style="font-size: 0.9em;">
+        <strong>Student A:</strong> On weekends. This activity makes us closer.
+       </div>
+      </div>
+      <div style="flex: 0.8; min-width: 300px; background: #F3E5F5; padding: 18px; border-radius: 15px; text-align: left;">
+       <div class="malay" style="font-size: 1.1em; margin-bottom: 8px; font-weight: bold;">
+        Frasa berguna / Useful phrases:
+       </div>
+       <div style="font-size: 1em; line-height: 1.4;">
+        <div class="english">
+         • Apa aktiviti kegemaran kamu?
+        </div>
+        <div class="english" style="font-size: 0.9em; margin-bottom: 8px;">
+         What is your favorite activity?
+        </div>
+        <div class="english">
+         • Saya suka... / I like...
+        </div>
+        <div class="english">
+         • Bagaimana dengan kamu? / How about you?
+        </div>
+        <div class="english">
+         • Bila kamu biasanya...? / When do you usually...?
+        </div>
+        <div class="english">
+         • Pada hujung minggu / On weekends
+        </div>
+       </div>
+       <div style="margin-top: 15px; padding: 10px; background: rgba(255,255,255,0.7); border-radius: 8px;">
+        <div class="malay" style="font-size: 1em; font-weight: bold;">
+         Latihan:
+        </div>
+        <div class="english" style="font-size: 0.9em;">
+         Practice with your partner!
+        </div>
+       </div>
+      </div>
+     </div>
+    </div>
+   </div><!-- Slide 11: Mini Quiz -->
+   <div class="slide">
+    <div class="slide-counter">
+     11/12
+    </div>
+    <div class="slide-header">
+     <h2>Kuiz Mini / Mini Quiz</h2>
+    </div>
+    <div class="icon">
+     🧠❓🏆
+    </div>
+    <div class="activity-section">
+     <div class="bilingual-text">
+      <div class="malay">
+       Pilih jawapan yang betul!
+      </div>
+      <div class="english">
+       Choose the correct answer!
+      </div>
+     </div>
+     <div class="question">
+      <div class="malay">
+       1. Manakah aktiviti rekreasi?
+      </div>
+      <div class="english">
+       Which is a recreational activity?
+      </div>
+      <div class="options"><button class="option-btn" onclick="checkQuiz(this, true, 1)">berjoging (jogging)</button> <button class="option-btn" onclick="checkQuiz(this, false, 1)">menonton TV (watching TV)</button> <button class="option-btn" onclick="checkQuiz(this, false, 1)">bermain permainan video (playing video games)</button>
+      </div>
+      <div class="feedback" id="quizFeedback1"></div>
+     </div>
+     <div class="question">
+      <div class="malay">
+       2. Aktiviti yang memberikan kebaikan fizikal ialah?
+      </div>
+      <div class="english">
+       Activities that provide physical benefits are?
+      </div>
+      <div class="options"><button class="option-btn" onclick="checkQuiz(this, false, 2)">membaca novel</button> <button class="option-btn" onclick="checkQuiz(this, true, 2)">berbasikal</button> <button class="option-btn" onclick="checkQuiz(this, false, 2)">mendengar muzik</button>
+      </div>
+      <div class="feedback" id="quizFeedback2"></div>
+     </div>
+     <div class="question">
+      <div class="malay">
+       3. Dalam petikan, keluarga Amir berkelah di mana?
+      </div>
+      <div class="english">
+       In the passage, where does Amir's family have picnics?
+      </div>
+      <div class="options"><button class="option-btn" onclick="checkQuiz(this, false, 3)">di pantai</button> <button class="option-btn" onclick="checkQuiz(this, true, 3)">di bawah pokok yang rindang</button> <button class="option-btn" onclick="checkQuiz(this, false, 3)">di rumah</button>
+      </div>
+      <div class="feedback" id="quizFeedback3"></div>
+     </div>
+    </div>
+   </div><!-- Slide 12: Conclusion -->
+   <div class="slide">
+    <div class="slide-counter">
+     12/12
+    </div>
+    <div class="slide-header">
+     <h2>Penutup dan Kesimpulan</h2>
+     <div class="english">
+      Conclusion and Summary
+     </div>
+    </div>
+    <div class="icon">
+     🎓✨🌟
+    </div>
+    <div class="summary-grid">
+     <div class="summary-card">
+      <h3>Apa yang kita pelajari?</h3>
+      <div class="english">
+       What did we learn?
+      </div>
+      <ul style="text-align: left; margin-top: 15px;">
+       <li>Aktiviti rekreasi dan hiburan</li>
+       <li>Kebaikan aktiviti masa lapang</li>
+       <li>Struktur ayat mudah</li>
+       <li>Perbualan harian</li>
+      </ul>
+     </div>
+     <div class="summary-card">
+      <h3>Galakan / Encouragement</h3>
+      <div class="bilingual-text">
+       <div class="malay">
+        Gunakan masa lapang dengan aktiviti yang sihat dan bermanfaat!
+       </div>
+       <div class="english">
+        Use your leisure time with healthy and beneficial activities!
+       </div>
+      </div>
+     </div>
+    </div>
+    <div class="moral-values" style="margin-top: 30px;">
+     <div class="bilingual-text">
+      <div class="malay">
+       Ingatlah: Aktiviti yang sihat membawa kepada kehidupan yang bahagia!
+      </div>
+      <div class="english">
+       Remember: Healthy activities lead to a happy life!
+      </div>
+     </div>
+     <div class="examples-grid" style="margin-top: 20px;">
+      <div class="example-card">
+       <div class="icon">
+        💪
+       </div>
+       <div class="malay">
+        Jaga kesihatan
+       </div>
+       <div class="english">
+        Maintain health
+       </div>
+      </div>
+      <div class="example-card">
+       <div class="icon">
+        👨‍👩‍👧‍👦
+       </div>
+       <div class="malay">
+        Masa bersama keluarga
+       </div>
+       <div class="english">
+        Family time
+       </div>
+      </div>
+      <div class="example-card">
+       <div class="icon">
+        🤝
+       </div>
+       <div class="malay">
+        Berkawan dengan sihat
+       </div>
+       <div class="english">
+        Healthy friendships
+       </div>
+      </div>
+     </div>
+    </div>
+    <div class="bilingual-text" style="margin-top: 30px;">
+     <div class="malay">
+      Terima kasih kerana belajar bersama!
+     </div>
+     <div class="english">
+      Thank you for learning together!
+     </div>
+    </div>
+    <div class="icon">
+     🎉👏🌟
+    </div>
+   </div>
+  </div>
+  <div class="navigation"><button class="nav-btn" id="prevBtn" onclick="changeSlide(-1)">⬅️ Sebelum / Previous</button> <button class="nav-btn" id="fullscreenBtn" onclick="toggleFullscreen()">🔳 Fullscreen (F)</button> <button class="nav-btn" id="nextBtn" onclick="changeSlide(1)">Seterus / Next ➡️</button>
+  </div>
+  <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+
+        // Default configuration
+        const defaultConfig = {
+            presentation_title: "Mengenal Aktiviti Rekreasi dan Hiburan",
+            subtitle: "Understanding Recreational and Entertainment Activities"
+        };
+
+        // Initialize Element SDK
+        if (window.elementSdk) {
+            window.elementSdk.init({
+                defaultConfig: defaultConfig,
+                onConfigChange: async (config) => {
+                    const titleElement = document.getElementById('presentation-title');
+                    const subtitleElement = document.getElementById('subtitle');
+                    
+                    if (titleElement) {
+                        titleElement.textContent = config.presentation_title || defaultConfig.presentation_title;
+                    }
+                    if (subtitleElement) {
+                        subtitleElement.textContent = config.subtitle || defaultConfig.subtitle;
+                    }
+                },
+                mapToCapabilities: (config) => ({
+                    recolorables: [],
+                    borderables: [],
+                    fontEditable: undefined,
+                    fontSizeable: undefined
+                }),
+                mapToEditPanelValues: (config) => new Map([
+                    ["presentation_title", config.presentation_title || defaultConfig.presentation_title],
+                    ["subtitle", config.subtitle || defaultConfig.subtitle]
+                ])
+            });
+        }
+
+        function changeSlide(direction) {
+            slides[currentSlide].classList.remove('active');
+            currentSlide += direction;
+            
+            if (currentSlide < 0) currentSlide = 0;
+            if (currentSlide >= totalSlides) currentSlide = totalSlides - 1;
+            
+            slides[currentSlide].classList.add('active');
+            updateNavigation();
+        }
+
+        function updateNavigation() {
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            
+            prevBtn.disabled = currentSlide === 0;
+            nextBtn.disabled = currentSlide === totalSlides - 1;
+        }
+
+
+
+        function checkQuiz(button, isCorrect, questionNum) {
+            const feedback = document.getElementById('quizFeedback' + questionNum);
+            const buttons = button.parentElement.querySelectorAll('.option-btn');
+            
+            buttons.forEach(btn => {
+                btn.disabled = true;
+                if (btn === button) {
+                    btn.classList.add(isCorrect ? 'correct' : 'incorrect');
+                }
+            });
+            
+            if (isCorrect) {
+                feedback.textContent = 'Betul! / Correct! Jawapan yang tepat!';
+                feedback.className = 'feedback correct';
+            } else {
+                feedback.textContent = 'Salah! / Wrong! Cuba fikirkan lagi.';
+                feedback.className = 'feedback incorrect';
+            }
+        }
+
+        function checkCorrection(questionNum, correctAnswer) {
+            const input = document.getElementById('errorCorrection' + questionNum);
+            const feedback = document.getElementById('correctionFeedback' + questionNum);
+            const answer = input.value.toLowerCase().trim();
+            
+            if (answer.includes(correctAnswer.toLowerCase()) || answer.includes(correctAnswer.toLowerCase().substring(2))) {
+                feedback.textContent = 'Betul! / Correct! Jawapan yang tepat!';
+                feedback.className = 'feedback correct';
+            } else {
+                feedback.textContent = `Cuba lagi! / Try again! Kata kerja yang sesuai ialah "${correctAnswer}".`;
+                feedback.className = 'feedback incorrect';
+            }
+        }
+
+        // Initialize navigation
+        updateNavigation();
+
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(err => {
+                    console.log(`Error attempting to enable fullscreen: ${err.message}`);
+                });
+            } else {
+                document.exitFullscreen();
+            }
+        }
+
+        // Update fullscreen button text based on state
+        document.addEventListener('fullscreenchange', function() {
+            const fullscreenBtn = document.getElementById('fullscreenBtn');
+            if (document.fullscreenElement) {
+                fullscreenBtn.innerHTML = '🔲 Exit Fullscreen (F)';
+            } else {
+                fullscreenBtn.innerHTML = '🔳 Fullscreen (F)';
+            }
+        });
+
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            // Don't trigger keyboard shortcuts when typing in input fields
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+                return;
+            }
+            
+            if (e.key === 'ArrowLeft') changeSlide(-1);
+            if (e.key === 'ArrowRight') changeSlide(1);
+            if (e.key === 'f' || e.key === 'F') {
+                e.preventDefault();
+                toggleFullscreen();
+            }
+        });
+    </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'994a3a11e2b19899',t:'MTc2MTQ4NDU3Mi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
